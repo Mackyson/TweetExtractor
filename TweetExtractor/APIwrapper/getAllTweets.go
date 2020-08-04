@@ -1,4 +1,4 @@
-package handler /*TODO handlerじゃあない気がする．*/
+package APIwrapper /*TODO handlerじゃあない気がする．*/
 import (
 	"TweetExtractor/model"
 	"context"
