@@ -1,4 +1,5 @@
-package APIwrapper /*TODO handlerじゃあない気がする．*/
+package APIwrapper
+
 import (
 	"TweetExtractor/model"
 	"context"
@@ -10,6 +11,7 @@ import (
 )
 
 func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
+
 	var (
 		tweets []model.Tweet
 		err    error
@@ -44,9 +46,13 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
 		}
 		for _, tweetJSON := range resJSON["hits"].(map[string]interface{})["hits"].([]interface{}) {
 			tweet := model.Tweet{UserId: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["user"].(map[string]interface{})["id_str"].(string), Text: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string)}
+			//map[string]interface{}へのキャストを繰り返して，JSONをちょっとずつパースしている．
 			tweets = append(tweets, tweet)
 		}
 		res, err = scrollReq.Do(context.Background(), es)
+		if err != nil {
+			return tweets, err
+		}
 	}
 	return tweets, err
 }
