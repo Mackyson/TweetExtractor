@@ -17,6 +17,6 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, tweet := range tweets {
-		fmt.Println(tweet.UserId)
+		fmt.Println("%+v", tweet.Urls)
 	}
 }
