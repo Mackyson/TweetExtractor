@@ -4,7 +4,6 @@ import (
 	"TweetExtractor/model"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"strings"
@@ -18,7 +17,7 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
 		err    error
 	)
 
-	query := "{\"query\": {\"match_all\": {}}, \"_source\": [\"user.id_str\",\"text\",\"entities\"]}"
+	query := "{\"query\": {\"match_all\": {}}, \"_source\": [\"id_str\",\"user.id_str\",\"text\",\"entities\"]}"
 	req := esapi.SearchRequest{
 		Index:  []string{"tweet"},
 		Body:   strings.NewReader(query),
@@ -47,6 +46,7 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
 		}
 		for _, tweetJSON := range resJSON["hits"].(map[string]interface{})["hits"].([]interface{}) {
 			tweet := model.Tweet{
+				Id:     tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["id_str"].(string),
 				UserId: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["user"].(map[string]interface{})["id_str"].(string),
 				Text:   tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string),
 			}
@@ -62,6 +62,5 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
 		}
 		time.Sleep(time.Millisecond * 1)
 	}
-	fmt.Println(1)
 	return tweets, err
 }
