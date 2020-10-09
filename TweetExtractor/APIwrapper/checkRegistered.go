@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
+	dbg "log"
 	"strings"
 )
 
@@ -20,12 +21,14 @@ func CheckRegistered(es *elasticsearch.Client, id string) (bool, error) {
 	}
 	var resJSON map[string]interface{}
 	if err = json.NewDecoder(res.Body).Decode(&resJSON); err != nil {
+		dbg.Printf("%+v", resJSON)
 		return false, err
 	}
 	res.Body.Close()
 	if len(resJSON["hits"].(map[string]interface{})["hits"].([]interface{})) == 0 {
-		return true, nil
-	} else {
 		return false, nil
+	} else {
+		return true, nil
 	}
+	return false, err
 }
