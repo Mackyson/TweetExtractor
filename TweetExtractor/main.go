@@ -22,19 +22,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	for _, tweet := range tweets {
+		tweetText := tweet.Status["text"].(string)
+		tweetId := tweet.Status["id_str"].(string)
 		// isRegistered := false //データが入っていない状態で登録済みチェックインを探すとエラーを吐くので，そのときはコメントアウトを外す
-		isRegistered, err := wrapper.CheckRegistered(es, tweet.Id)
+		isRegistered, err := wrapper.CheckRegistered(es, tweetId)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if !isRegistered {
 			//チェックインツイートのリツイートを拾っていた場合
-			isRT := textExtractor.CheckWhetherRT(tweet.Text)
+			isRT := textExtractor.CheckWhetherRT(tweetText)
 			if isRT {
 				continue
 			}
-			spotName := textExtractor.ExtractSpotName(tweet.Text)
+			spotName := textExtractor.ExtractSpotName(tweetText)
 			log.Println(spotName)
 			//restaurantインデックスに登録済みのSpotだった場合
 			hasSameSpotDataInRestaurant, err := wrapper.CheckSameSpotDataInRestaurant(es, spotName)
@@ -55,7 +58,7 @@ func main() {
 				continue
 			}
 			//その他の場合
-			fmt.Printf("%s", tweet.Text)
+			fmt.Printf("%s", tweetText)
 			stdin.Scan()
 			isNewRestaurant := stdin.Text() == "y"
 			if isNewRestaurant {

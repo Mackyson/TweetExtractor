@@ -10,8 +10,9 @@ import (
 	"strings"
 )
 
-func RegisterAsRestaurant(es *elasticsearch.Client, tweet model.Tweet) error {
-	tweetInfoJSONText, err := json.Marshal(tweet)
+func RegisterAsRestaurant(es *elasticsearch.Client, searchResponse model.SearchResponse) error {
+	tweetInfoJSONText, err := json.Marshal(searchResponse.Status)
+	fmt.Println(tweetInfoJSONText)
 	if err != nil {
 		return err
 	}
@@ -28,8 +29,9 @@ func RegisterAsRestaurant(es *elasticsearch.Client, tweet model.Tweet) error {
 	return nil
 }
 
-func RegisterAsOther(es *elasticsearch.Client, tweet model.Tweet) error {
-	tweetInfoJSONText, err := json.Marshal(tweet)
+func RegisterAsOther(es *elasticsearch.Client, searchResponse model.SearchResponse) error {
+	tweetInfoJSONText, err := json.Marshal(searchResponse.Status)
+	fmt.Println(string(tweetInfoJSONText))
 	if err != nil {
 		return err
 	}

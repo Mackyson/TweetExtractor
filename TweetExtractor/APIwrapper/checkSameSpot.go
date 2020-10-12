@@ -11,7 +11,7 @@ import (
 
 //TODO クエリの結果を取得する部分は切り分けてもいいかも
 func CheckSameSpotDataInRestaurant(es *elasticsearch.Client, spotName string) (bool, error) {
-	query := "{\"query\": {\"match_phrase\": {\"text\":\" at " + spotName + " in 高松市\"}}}"
+	query := "{\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"text\":\"at " + spotName + " in 高松市 \"}},{\"match_phrase\":{\"text\":\"at " + spotName + " in Takamatsu\"}}]}}}"
 	req := esapi.SearchRequest{
 		Index: []string{"restaurant"},
 		Body:  strings.NewReader(query),
@@ -36,7 +36,7 @@ func CheckSameSpotDataInRestaurant(es *elasticsearch.Client, spotName string) (b
 	return false, err
 }
 func CheckSameSpotDataInOther(es *elasticsearch.Client, spotName string) (bool, error) {
-	query := "{\"query\": {\"match_phrase\": {\"text\":\"" + spotName + " in 高松市\"}}}"
+	query := "{\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"text\":\"at " + spotName + " in 高松市 \"}},{\"match_phrase\":{\"text\":\"at " + spotName + " in Takamatsu\"}}]}}}"
 	req := esapi.SearchRequest{
 		Index: []string{"other"},
 		Body:  strings.NewReader(query),
@@ -52,7 +52,6 @@ func CheckSameSpotDataInOther(es *elasticsearch.Client, spotName string) (bool, 
 	}
 	res.Body.Close()
 
-	// dbg.Printf("%+v", resJSON)
 	if len(resJSON["hits"].(map[string]interface{})["hits"].([]interface{})) == 0 {
 		return false, nil
 	} else {

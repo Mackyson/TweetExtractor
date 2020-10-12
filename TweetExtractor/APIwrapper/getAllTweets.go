@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
+func GetAllTweets(es *elasticsearch.Client) ([]model.SearchResponse, error) {
 
 	var (
-		tweets []model.Tweet
+		tweets []model.SearchResponse
 		err    error
 	)
 
-	query := "{\"query\": {\"match_all\": {}}, \"_source\": [\"id_str\",\"user.id_str\",\"text\",\"entities\"]}"
+	query := "{\"query\": {\"match_all\": {}}}"
 	req := esapi.SearchRequest{
 		Index:  []string{"tweet"},
 		Body:   strings.NewReader(query),
@@ -45,15 +45,16 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.Tweet, error) {
 			break
 		}
 		for _, tweetJSON := range resJSON["hits"].(map[string]interface{})["hits"].([]interface{}) {
-			tweet := model.Tweet{
-				Id:     tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["id_str"].(string),
-				UserId: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["user"].(map[string]interface{})["id_str"].(string),
-				Text:   tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string),
-			}
-			for _, urlJSON := range tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["entities"].(map[string]interface{})["urls"].([]interface{}) {
-				tweet.Urls = append(tweet.Urls, urlJSON.(map[string]interface{})["expanded_url"].(string))
-			}
-			//map[string]interface{}へのキャストを繰り返して，JSONをちょっとずつパースしている．
+			// tweet := model.Tweet{
+			// 	Id:     tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["id_str"].(string),
+			// 	UserId: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["user"].(map[string]interface{})["id_str"].(string),
+			// 	Text:   tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string),
+			// }
+			// for _, urlJSON := range tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["entities"].(map[string]interface{})["urls"].([]interface{}) {
+			// 	tweet.Urls = append(tweet.Urls, urlJSON.(map[string]interface{})["expanded_url"].(string))
+			// }
+			// //map[string]interface{}へのキャストを繰り返して，JSONをちょっとずつパースしている．
+			tweet := model.SearchResponse{Status: tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})}
 			tweets = append(tweets, tweet)
 		}
 		res, err = scrollReq.Do(context.Background(), es)
