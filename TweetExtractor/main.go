@@ -92,4 +92,30 @@ func main() {
 			}
 		}
 	}
+	if *mode == "userlist" {
+		fmt.Println(len(tweets))
+		var idList []string
+		for _, tweet := range tweets {
+			tweetUserId := tweet.Status["user"].(map[string]interface{})["id_str"].(string)
+			idList = append(idList, tweetUserId)
+		}
+		idList = unique(idList)
+		idListCSV := strings.Join(idList, "\n")
+		fmt.Println(idListCSV)
+	}
+	if *mode == "statistics" {
+	}
+}
+func unique(origList []string) []string {
+	m := map[string]bool{}
+	var l []string
+	for _, elm := range origList {
+		m[elm] = true
+	}
+	for k, v := range m {
+		if v {
+			l = append(l, k)
+		}
+	}
+	return l
 }
