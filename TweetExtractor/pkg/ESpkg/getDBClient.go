@@ -1,4 +1,4 @@
-package APIwrapper
+package ESpkg
 
 import "github.com/elastic/go-elasticsearch/v8"
 

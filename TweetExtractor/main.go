@@ -1,13 +1,16 @@
 package main
 
 import (
-	wrapper "TweetExtractor/APIwrapper"
-	textExtractor "TweetExtractor/TextExtractor"
+	wrapper "TweetExtractor/internal/APIwrapper"
+	textExtractor "TweetExtractor/internal/TextExtractor"
+	"TweetExtractor/pkg/ESpkg"
+	"TweetExtractor/pkg/Textpkg"
 	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -23,12 +26,12 @@ func main() {
 
 	stdin := bufio.NewScanner(os.Stdin)
 
-	es, err := wrapper.GetDBClient()
+	es, err := ESpkg.GetDBClient()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	tweets, err := wrapper.GetAllTweets(es)
+	tweets, err := wrapper.GetAllTweets(es, "tweet")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,14 +50,14 @@ func main() {
 			}
 			if !isRegistered {
 				//チェックインツイートのリツイートを拾っていた場合
-				isRT := textExtractor.CheckWhetherRT(tweetText)
+				isRT := Textpkg.CheckRT(tweetText)
 				if isRT {
 					continue
 				}
 				spotName := textExtractor.ExtractSpotName(tweetText)
 				log.Println(spotName)
 				//restaurantインデックスに登録済みのSpotだった場合
-				hasSameSpotDataInRestaurant, err := wrapper.CheckSameSpotDataInRestaurant(es, spotName)
+				hasSameSpotDataInRestaurant, err := wrapper.CheckSameSpotDataWithIndex(es, "restaurant", spotName)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -63,7 +66,7 @@ func main() {
 					continue
 				}
 				//otherインデックスに登録済みのSpotだった場合
-				hasSameSpotDataInOther, err := wrapper.CheckSameSpotDataInOther(es, spotName)
+				hasSameSpotDataInOther, err := wrapper.CheckSameSpotDataWithIndex(es, "other", spotName)
 				if err != nil {
 					log.Fatal(err)
 				}

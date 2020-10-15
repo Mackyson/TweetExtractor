@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetAllTweets(es *elasticsearch.Client) ([]model.SearchResponse, error) {
+func GetAllTweets(es *elasticsearch.Client, indexName string) ([]model.SearchResponse, error) {
 
 	var (
 		tweets []model.SearchResponse
@@ -19,7 +19,7 @@ func GetAllTweets(es *elasticsearch.Client) ([]model.SearchResponse, error) {
 
 	query := "{\"query\": {\"match_all\": {}}}"
 	req := esapi.SearchRequest{
-		Index:  []string{"tweet"},
+		Index:  []string{indexName},
 		Body:   strings.NewReader(query),
 		Scroll: 10 * time.Second,
 	}
