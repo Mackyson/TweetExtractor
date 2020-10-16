@@ -6,16 +6,12 @@ import (
 	"TweetExtractor/pkg/ESpkg"
 	"TweetExtractor/pkg/Textpkg"
 	"bufio"
-	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
 func main() {
-
-	op := flag.String("op", "", "option")
-	flag.Parse()
 
 	stdin := bufio.NewScanner(os.Stdin)
 
@@ -32,10 +28,7 @@ func main() {
 	for _, tweet := range tweets {
 		tweetText := tweet.Status["text"].(string)
 		tweetId := tweet.Status["id_str"].(string)
-		isRegistered := false
-		if *op != "new" {
-			isRegistered, err = wrapper.CheckRegistered(es, tweetId)
-		}
+		isRegistered, err := wrapper.CheckRegistered(es, tweetId)
 		if err != nil {
 			log.Fatal(err)
 		}
