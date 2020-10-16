@@ -31,12 +31,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tweets, err := wrapper.GetAllTweets(es, "tweet")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if *mode == "register" {
+		tweets, err := wrapper.GetAllTweets(es, "tweet")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		for _, tweet := range tweets {
 			tweetText := tweet.Status["text"].(string)
@@ -93,29 +92,19 @@ func main() {
 		}
 	}
 	if *mode == "userlist" {
-		fmt.Println(len(tweets))
+		tweets, err := wrapper.GetAllTweets(es, "restaurant")
+		if err != nil {
+			log.Fatal(err)
+		}
 		var idList []string
 		for _, tweet := range tweets {
 			tweetUserId := tweet.Status["user"].(map[string]interface{})["id_str"].(string)
 			idList = append(idList, tweetUserId)
 		}
-		idList = unique(idList)
-		idListCSV := strings.Join(idList, "\n")
-		fmt.Println(idListCSV)
+		idList = Textpkg.UniqueStrList(idList)
+		idListCSV := strings.Join(idList, ",")
+		fmt.Print(idListCSV)
 	}
 	if *mode == "statistics" {
 	}
-}
-func unique(origList []string) []string {
-	m := map[string]bool{}
-	var l []string
-	for _, elm := range origList {
-		m[elm] = true
-	}
-	for k, v := range m {
-		if v {
-			l = append(l, k)
-		}
-	}
-	return l
 }
