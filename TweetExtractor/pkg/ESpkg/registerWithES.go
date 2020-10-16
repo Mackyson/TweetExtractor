@@ -12,7 +12,6 @@ import (
 
 func RegisterWithIndex(es *elasticsearch.Client, indexName string, searchResponse model.SearchResponse) error {
 	tweetInfoJSONText, err := json.Marshal(searchResponse.Status)
-	fmt.Println(tweetInfoJSONText)
 	if err != nil {
 		return err
 	}
@@ -25,6 +24,6 @@ func RegisterWithIndex(es *elasticsearch.Client, indexName string, searchRespons
 	if err != nil {
 		return err
 	}
-	fmt.Println("stored in the " + indexName + "index")
+	fmt.Println("stored in the " + indexName + " index")
 	return nil
 }
