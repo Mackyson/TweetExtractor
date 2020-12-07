@@ -27,9 +27,8 @@ func main() {
 
 	for _, e := range list {
 		total := 0
-		// query := "{\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"text\":\"at " + spotName + " in 高松市 \"}},{\"match_phrase\":{\"text\":\"at " + spotName + " in Takamatsu\"}}]}}}"
-		query := "{\"query\": {\"term\": {\"user.id_str\":\"" + e + "\"}}}"
-		m, _ := wrapper.GetAllStatistics(es, "restaurant", query)
+		query := "{\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"text\":\"at " + e + " in 高松市 \"}},{\"match_phrase\":{\"text\":\"at " + e + " in Takamatsu\"}}]}}}"
+		m, _ := wrapper.GetRestaurantStatistics(es, "restaurant", query)
 		for _, v := range m {
 			total += v
 		}
@@ -39,6 +38,6 @@ func main() {
 		return result[i].Total > result[j].Total //降順ソート
 	})
 	for _, r := range result {
-		fmt.Printf("%s : %+v, total:%d\n", r.Name, r.Count, r.Total)
+		fmt.Printf("%s : %+v, total:%d, %d users\n", r.Name, r.Count, r.Total, len(r.Count))
 	}
 }

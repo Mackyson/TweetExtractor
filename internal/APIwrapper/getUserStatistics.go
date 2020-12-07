@@ -13,12 +13,8 @@ import (
 	"TweetExtractor/internal/TextExtractor"
 )
 
-func GetAllStatistics(es *elasticsearch.Client, indexName string, query string) (map[string]int, error) { //あとでまともな名前にする
+func GetUserStatistics(es *elasticsearch.Client, indexName string, query string) (map[string]int, error) { //あとでまともな名前にする
 
-	var (
-		// count map[string]int
-		err error
-	)
 	count := make(map[string]int)
 	req := esapi.SearchRequest{
 		Index:  []string{indexName},
@@ -53,9 +49,8 @@ func GetAllStatistics(es *elasticsearch.Client, indexName string, query string) 
 			break
 		}
 		for _, tweetJSON := range resJSON["hits"].(map[string]interface{})["hits"].([]interface{}) {
-			// id := tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["user"].(map[string]interface{})["id_str"].(string)
-			id := TextExtractor.ExtractSpotName(tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string))
-			count[id] += 1
+			restaurantName := TextExtractor.ExtractSpotName(tweetJSON.(map[string]interface{})["_source"].(map[string]interface{})["text"].(string))
+			count[restaurantName] += 1
 		}
 		res, err = scrollReq.Do(context.Background(), es)
 		r = res.Body

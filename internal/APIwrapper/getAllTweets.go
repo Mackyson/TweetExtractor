@@ -17,7 +17,8 @@ func GetAllTweets(es *elasticsearch.Client, indexName string) ([]model.SearchRes
 		err    error
 	)
 
-	query := "{\"query\": {\"match_all\": {}}}"
+	query := "{\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"text\":\" in 高松市 \"}},{\"match_phrase\":{\"text\":\" in Takamatsu\"}}]}}}"
+	// query := "{\"query\": {\"match_all\": {}}}"
 	req := esapi.SearchRequest{
 		Index:  []string{indexName},
 		Body:   strings.NewReader(query),

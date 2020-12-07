@@ -3,9 +3,11 @@ register:
 
 userlist:
 	@go run ./cmd/userList/main.go
-
-statistics:
-	@go run ./cmd/statistics/main.go
-
 restaurantlist:
 	@go run ./cmd/restaurantList/main.go
+
+userStatistics:
+	@go run ./cmd/userStatistics/main.go
+restaurantStatistics:
+	@go run ./cmd/restaurantStatistics/main.go
+
